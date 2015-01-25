@@ -29,16 +29,15 @@
          (get-operation system :bar) => nil))
 
 (facts "on respond"
-       (respond ..system.. [..e.. ..a.. ..v.. ..t..])
+       (respond ..system.. ..db.. [..e.. ..a.. ..v.. ..t..])
        => [..identity.. ..a.. ..results.. ..t..]
        (provided
         (get-identity ..system..) => ..identity..
         (get-operation ..system.. ..a..) => #'..operation..
-        (..operation.. ..v..) => ..results..))
+        (..operation.. ..system.. ..db.. ..v..) => ..results..))
 
 (facts "on converse"
        (converse ..system.. [..datum1.. ..datum2..] [..e.. ..a.. ..v.. ..t..])
-       => [..datum1..  ..datum2.. ..response-datum.. ..op?-datum..]
+       => [..datum1..  ..datum2.. [..e.. ..a.. ..v.. ..t..] ..response-datum..]
        (provided
-        (respond ..system.. [..e.. ..a.. ..v.. ..t..]) => ..response-datum..
-        (respond ..system.. [..e.. :op?  nil   ..t..]) => ..op?-datum..))
+        (respond ..system.. [..datum1.. ..datum2..] [..e.. ..a.. ..v.. ..t..]) => ..response-datum..))

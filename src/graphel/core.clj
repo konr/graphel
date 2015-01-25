@@ -11,7 +11,7 @@
 
 (defn with-base-ops [system]
   (-> system
-      (assoc-in  [:operations :op?] (fn [system db] (operations system (state system db))))
+      (assoc-in  [:operations :op?] (fn [system db v] (operations system (state system db))))
       (update-in [:conditions]      (fn [conditions] (map-vals (p< conj :op?) conditions)))))
 
 (defn get-identity [system]
@@ -20,10 +20,8 @@
 (defn get-operation [system operation]
   (get-in system [:operations operation]))
 
-(defn respond [system [e a v t]]
-  [(get-identity system) a ((get-operation system a) v) t])
+(defn respond [system db [e a v t]]
+  [(get-identity system) a ((get-operation system a) system db v) t])
 
-(defn converse [system db [e a v t :as action]]
-  (concat db
-          [(respond system [e a    v   t])
-           (respond system [e :op? nil t])]))
+(defn converse [system db action]
+  (concat db [action (respond system db action)]))
