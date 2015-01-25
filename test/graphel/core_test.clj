@@ -1,7 +1,44 @@
 (ns graphel.core-test
-  (:require [clojure.test :refer :all]
+  (:require [midje.sweet :refer :all]
+            [graphel.utils :refer :all]
             [graphel.core :refer :all]))
 
-(deftest a-test
-  (testing "FIXME, I fail."
-    (is (= 0 1))))
+(facts "on state"
+       (let [system {:states {:foo (fn [db] (find-first (comp (p> = :bar) second) db))}}]
+         (state system []) => :initial
+         (state system [[irrelevant :bar]]) => :foo))
+
+(facts "on operations"
+       (let [system {:conditions {:foo [:bar :baz]}}]
+         (operations system :foo) => [:bar :baz]
+         (operations system :bar) => nil))
+
+(facts "on with-base-ops"
+       (with-base-ops {:conditions {:foo [:bar]}
+                       :operations {}})
+       => (contains {:conditions {:foo [:bar :op?]}
+                     :operations (contains {:op? irrelevant})}))
+
+(facts "on get-identity"
+       (get-identity {:identity ..x..}) => ..x..
+       (get-identity {}) => nil)
+
+(facts "on get-operation"
+       (let [system {:operations {:foo ..foo..}}]
+         (get-operation system :foo) => ..foo..
+         (get-operation system :bar) => nil))
+
+(facts "on respond"
+       (respond ..system.. [..e.. ..a.. ..v.. ..t..])
+       => [..identity.. ..a.. ..results.. ..t..]
+       (provided
+        (get-identity ..system..) => ..identity..
+        (get-operation ..system.. ..a..) => #'..operation..
+        (..operation.. ..v..) => ..results..))
+
+(facts "on converse"
+       (converse ..system.. [..datum1.. ..datum2..] [..e.. ..a.. ..v.. ..t..])
+       => [..datum1..  ..datum2.. ..response-datum.. ..op?-datum..]
+       (provided
+        (respond ..system.. [..e.. ..a.. ..v.. ..t..]) => ..response-datum..
+        (respond ..system.. [..e.. :op?  nil   ..t..]) => ..op?-datum..))
