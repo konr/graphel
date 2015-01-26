@@ -1,0 +1,13 @@
+(page "index.html"
+  (:require
+    [sample-finance-system.rpc :as rpc]
+    [tailrecursion.hoplon.reload :refer [reload-all]]))
+
+(rpc/init)
+
+(html
+  (head)
+  (body
+    (h1 "Hello Graphel!")
+    (p (b "Current action: ") (text "~{rpc/action}"))
+    (p (b "DB: ") (text "~{rpc/db}"))))

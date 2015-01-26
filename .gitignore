@@ -9,3 +9,11 @@ pom.xml.asc
 /.nrepl-port
 .hgignore
 .hg/
+/.boot/
+/resources/public/
+/.nrepl-port
+/.repl-history
+/.lein-*
+/target
+/classes
+/checkouts

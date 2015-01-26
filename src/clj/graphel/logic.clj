@@ -1,4 +1,4 @@
-(ns graphel.core
+(ns graphel.logic
   (:require [graphel.utils :refer :all]))
 
 
@@ -23,5 +23,11 @@
 (defn respond [system db [e a v t]]
   [(get-identity system) a ((get-operation system a) system db v) t])
 
+(defn should-run [db action]
+  (let [last-timestamp (some-> db last (nth 3))]
+    (or (not last-timestamp) (< last-timestamp (nth action 3)))))
+
 (defn converse [system db action]
-  (concat db [action (respond system db action)]))
+    (if (should-run db action)
+      (concat db [action (respond system db action)])
+      db))
