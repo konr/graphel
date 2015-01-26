@@ -1,14 +1,12 @@
 # graphel
 
-A Clojure library designed to ... well, that part is up to you.
+## Setup
+
+1. Install lein
+2. Install boot
 
 ## Usage
 
-FIXME
+* lein midje :autotest
+* lein boot development #and open localhost:8000
 
-## License
-
-Copyright © 2015 FIXME
-
-Distributed under the Eclipse Public License either version 1.0 or (at
-your option) any later version.

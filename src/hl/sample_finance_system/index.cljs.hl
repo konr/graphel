@@ -3,6 +3,8 @@
     [sample-finance-system.rpc :as rpc]
     [tailrecursion.hoplon.reload :refer [reload-all]]))
 
+(reload-all 1000)
+
 (rpc/init)
 
 (html

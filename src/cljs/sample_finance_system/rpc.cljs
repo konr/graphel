@@ -6,13 +6,13 @@
    [tailrecursion.castra :refer [mkremote]]))
 
 (def command-list
-  [[:user :op? nil 1]
-   [:user :log-in nil 2]
-   [:user :op? nil 3]
-   [:user :show-transactions nil 4]
-   [:user :op? nil 5]
-   [:user :log-out nil 6]
-   :reset])
+  [:reset
+   [:user :op? nil 0]
+   [:user :log-in nil 1]
+   [:user :op? nil 2]
+   [:user :show-transactions nil 3]
+   [:user :op? nil 4]
+   [:user :log-out nil 5]])
 
 (def i (atom 0))
 
@@ -23,15 +23,11 @@
 (defc= action (get state :action))
 (defc= db     (get state :db))
 
-(def get-state
+(def step
   (mkremote 'sample-finance-system.api/step state error loading))
 
-(def reset-system
-  (mkremote 'sample-finance-system.api/reset-system (cell nil) (cell nil) (cell nil)))
-
-(defn step []
-  (get-state (nth command-list (rem @i (count command-list))))
-  (swap! i inc))
+(defn update []
+  (step (nth command-list (rem (swap! i inc) (count command-list)))))
 
 (defn init []
-  (js/setInterval step 500))
+  (js/setInterval update 500))
