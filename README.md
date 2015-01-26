@@ -5,8 +5,12 @@
 1. Install lein
 2. Install boot
 
-## Usage
+## Running tests
 
 * lein midje :autotest
-* lein boot development #and open localhost:8000
+
+
+## Running web demo (on localhost:8000)
+
+* lein boot development
 
