@@ -10,17 +10,20 @@
                             :response-schema {:name "state" :schema :discoverable}
                             :request-schema  {:username {:name "Username" :schema :string}
                                               :password {:name "Password" :schema :string}}}
-                   :op {:description "Operation"
-                        :request-schema nil}} 1]
+                   :op? {:description "Discovers about valid operations"
+                         :request-schema {:name "target" :schema :string}}} 1]
    [:user :log-in {:username "in" :password "valid"} 2]
    [:machine :log-in false 2]
    [:user :log-in {:username "foo" :password "bar"} 3]
    [:machine :log-in :logged-in 3]
-   [:user :op? :logged-in 4]
+   [:user :op? :logged-in 4] ;; TODO react on :logged-in
    [:machine :op? {:show-transactions {:description "Show user's transactions"
                                        :response-schema [[{:name "transaction name" :schema :string}
                                                           {:name "index" :schema :int}]]
                                        :request-schema nil}
+                   ;; TODO request schema as enum with current affordances
+                   :op? {:description "Discovers about valid operations"
+                         :request-schema {:name "target" :schema :string}}
                    :log-out {:description "Logs out"
                              :request-schema nil}} 4]
    [:user :show-transactions nil 5]
@@ -30,6 +33,8 @@
                                        :response-schema [[{:name "transaction name" :schema :string}
                                                           {:name "index" :schema :int}]]
                                        :request-schema nil}
+                   :op? {:description "Discovers about valid operations"
+                         :request-schema {:name "target" :schema :string}}
                    :log-out           {:description "Logs out"
                                        :request-schema nil}} 6]
    [:user    :log-out nil 7]
@@ -39,14 +44,13 @@
                             :response-schema {:name "state" :schema :discoverable}
                             :request-schema  {:username {:name "Username" :schema :string}
                                               :password {:name "Password" :schema :string}}}
-                   :op {:description "Operation"
-                        :request-schema nil}} 8]])
+
+                   :op? {:description "Discovers about valid operations"
+                         :request-schema {:name "target" :schema :string}}} 8]])
 
 (fact
  (let [system (logic/with-base-ops webbank-system)]
    (->> conversation
         (filter (comp (p> = :user) first))
-        (take 1)
         (reduce #(logic/converse system %1 %2) []))
-   => (->> conversation
-           (take 2))))
+   => conversation))

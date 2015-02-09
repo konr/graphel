@@ -9,9 +9,21 @@
 (defn operations [system state]
   (get-in system [:conditions state]))
 
+(defn sanitize-op [op]
+  (-> op
+      (dissoc :response-fn)))
+
 (defn with-base-ops [system]
   (-> system
-      (assoc-in  [:operations :op?] (fn [system db v] (operations system (state system db))))
+      (assoc-in  [:operations :op?]
+                 {:description "Discovers about valid operations"
+                  :request-schema {:schema :string :name "target"}
+                  :response-fn (fn [system db v]
+                                 (->>
+                                  (state system db)
+                                  (operations system)
+                                  (map (fn [x] {x (sanitize-op (get-operation system x))}))
+                                  (into {})))})
       (update-in [:conditions]      (fn [conditions] (map-vals (p< conj :op?) conditions)))))
 
 (defn get-identity [system]
@@ -20,8 +32,10 @@
 (defn get-operation [system operation]
   (get-in system [:operations operation]))
 
+(def get-operation-fn (comp :response-fn get-operation))
+
 (defn respond [system db [e a v t]]
-  [(get-identity system) a ((get-operation system a) system db v) t])
+  [(get-identity system) a ((get-operation-fn system a) system db v) t])
 
 (defn should-run [db action]
   (let [last-timestamp (some-> db last (nth 3))]
