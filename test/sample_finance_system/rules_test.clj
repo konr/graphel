@@ -6,19 +6,47 @@
 
 (def conversation
   [[:user :op? nil 1]
-   [:machine :op? [:log-in :op?] 1]
-   [:user :log-in nil 2]
-   [:machine :log-in nil 2]
-   [:user :op? nil 3]
-   [:machine :op? [:show-transactions :log-out :op?] 3]
-   [:user :show-transactions nil 4]
-   [:machine :show-transactions transactions 4]
-   [:user :op? nil 5]
-   [:machine :op? [:show-transactions :log-out :op?] 5]
-   [:user    :log-out nil 6]
-   [:machine :log-out nil 6]
-   [:user :op? nil 7]
-   [:machine :op? [:log-in :op?] 7]])
+   [:machine :op? {:log-in {:description "Logs in"
+                            :response-schema {:name "state" :schema :discoverable}
+                            :request-schema  {:username {:name "Username" :schema :string}
+                                              :password {:name "Password" :schema :string}}}
+                   :op? {:description "Discovers about valid operations"
+                         :request-schema {:name "target" :schema :string}}} 1]
+   [:user :log-in {:username "in" :password "valid"} 2]
+   [:machine :log-in false 2]
+   [:user :log-in {:username "foo" :password "bar"} 3]
+   [:machine :log-in :logged-in 3]
+   [:user :op? :logged-in 4] ;; TODO react on :logged-in
+   [:machine :op? {:show-transactions {:description "Show user's transactions"
+                                       :response-schema [[{:name "transaction name" :schema :string}
+                                                          {:name "index" :schema :int}]]
+                                       :request-schema nil}
+                   ;; TODO request schema as enum with current affordances
+                   :op? {:description "Discovers about valid operations"
+                         :request-schema {:name "target" :schema :string}}
+                   :log-out {:description "Logs out"
+                             :request-schema nil}} 4]
+   [:user :show-transactions nil 5]
+   [:machine :show-transactions transactions 5]
+   [:user :op? nil 6]
+   [:machine :op? {:show-transactions {:description "Show user's transactions"
+                                       :response-schema [[{:name "transaction name" :schema :string}
+                                                          {:name "index" :schema :int}]]
+                                       :request-schema nil}
+                   :op? {:description "Discovers about valid operations"
+                         :request-schema {:name "target" :schema :string}}
+                   :log-out           {:description "Logs out"
+                                       :request-schema nil}} 6]
+   [:user    :log-out nil 7]
+   [:machine :log-out nil 7]
+   [:user :op? nil 8]
+   [:machine :op? {:log-in {:description "Logs in"
+                            :response-schema {:name "state" :schema :discoverable}
+                            :request-schema  {:username {:name "Username" :schema :string}
+                                              :password {:name "Password" :schema :string}}}
+
+                   :op? {:description "Discovers about valid operations"
+                         :request-schema {:name "target" :schema :string}}} 8]])
 
 (fact
  (let [system (logic/with-base-ops webbank-system)]

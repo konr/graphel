@@ -23,9 +23,13 @@
        (get-identity {:identity ..x..}) => ..x..
        (get-identity {}) => nil)
 
+(facts "on sanitize-op"
+       (sanitize-op {:foo ..x.. :response-fn ..y..}) => {:foo ..x..})
+
 (facts "on get-operation"
-       (let [system {:operations {:foo ..foo..}}]
-         (get-operation system :foo) => ..foo..
+       (let [system {:operations {:foo {:response-fn ..foo..}}}]
+         (get-operation system :foo)    => {:response-fn ..foo..}
+         (get-operation-fn system :foo) => ..foo..
          (get-operation system :bar) => nil))
 
 (facts "on respond"
@@ -33,7 +37,7 @@
        => [..identity.. ..a.. ..results.. ..t..]
        (provided
         (get-identity ..system..) => ..identity..
-        (get-operation ..system.. ..a..) => #'..operation..
+        (get-operation-fn ..system.. ..a..) => #'..operation..
         (..operation.. ..system.. ..db.. ..v..) => ..results..))
 
 (facts "on should-run"
