@@ -12,4 +12,8 @@
   (body
     (h1 "Hello Graphel!")
     (p (b "Current action: ") (text "~{rpc/action}"))
-    (p (b "DB: ") (text "~{rpc/db}"))))
+    (p (b "Last: ")           (text "~{(last rpc/db)}"))
+    (p (b "Full DB: ")        (text "~{rpc/db}"))
+    (form
+     {:on-submit #(do (rpc/submit (val-id "message")) (do! (by-id "message") :value ""))}
+     (input :type "text" :id "message"))))

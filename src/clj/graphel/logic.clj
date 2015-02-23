@@ -13,6 +13,9 @@
   (-> op
       (dissoc :response-fn)))
 
+(defn get-operation [system operation]
+  (get-in system [:operations operation]))
+
 (defn with-base-ops [system]
   (-> system
       (assoc-in  [:operations :op?]
@@ -28,9 +31,6 @@
 
 (defn get-identity [system]
   (:identity system))
-
-(defn get-operation [system operation]
-  (get-in system [:operations operation]))
 
 (def get-operation-fn (comp :response-fn get-operation))
 
