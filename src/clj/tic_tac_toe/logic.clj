@@ -1,4 +1,4 @@
-(ns tic-tac-toe.logic)
+(ns tic-tac-toe.rules)
 
 
 (def state (atom {}))
@@ -27,3 +27,4 @@
                           :request-schema nil}}
    :conditions {:initial   [:log-in]
                 :logged-in [:show-transactions :log-out]}})
+

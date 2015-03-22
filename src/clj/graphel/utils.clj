@@ -30,3 +30,5 @@
 (def p> partial)
 (def p< partial<)
 
+(def keep-first (comp first keep))
+
